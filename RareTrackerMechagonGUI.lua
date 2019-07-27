@@ -31,6 +31,9 @@ local shard_id_frame_height = 16
 local background_opacity = 0.4
 local front_opacity = 0.6
 
+--localization
+local L = LibStub ("AceLocale-3.0"):GetLocale ("RareTrackerMechagon", true)
+
 -- ####################################################################
 -- ##                              GUI                               ##
 -- ####################################################################
@@ -51,7 +54,7 @@ function RTM:InitializeShardNumberFrame()
 	
 	f.status_text = f:CreateFontString(nil, nil, "GameFontNormal")
 	f.status_text:SetPoint("TOPLEFT", 10 + 2 * favorite_rares_width + 2 * frame_padding, -3)
-	f.status_text:SetText("Shard ID: Unknown")
+	f.status_text:SetText(L["Shard ID: Unknown"])
 	f:SetPoint("TOPLEFT", self, frame_padding, -frame_padding)
 	
 	return f
@@ -118,14 +121,14 @@ function RTM:CreateRareTableEntry(npc_id, parent_frame)
 					-- SendChatMessage
 					if loc then
 						SendChatMessage(
-							string.format("<RTM> %s (%s%%) seen at ~(%.2f, %.2f)", name, health, loc.x, loc.y),
+							string.format(L["<RTM> %s (%s%%) seen at ~(%.2f, %.2f)"], name, health, loc.x, loc.y),
 							target,
 							nil,
 							1
 						)
 					else
 						SendChatMessage(
-							string.format("<RTM> %s (%s%%) seen at ~(N/A)", name, health),
+							string.format(L["<RTM> %s (%s%%) seen at ~(N/A)"], name, health),
 							target,
 							nil,
 							1
@@ -134,7 +137,7 @@ function RTM:CreateRareTableEntry(npc_id, parent_frame)
 				elseif self.last_recorded_death[npc_id] ~= nil then
 					if GetServerTime() - last_death < 60 then
 						SendChatMessage(
-							string.format("<RTM> %s has died", name, GetServerTime() - last_death),
+							string.format(L["<RTM> %s has died"], name, GetServerTime() - last_death),
 							target,
 							nil,
 							1
@@ -142,7 +145,7 @@ function RTM:CreateRareTableEntry(npc_id, parent_frame)
 					else
 						SendChatMessage(
 							string.format(
-								"<RTM> %s was last seen ~%s minutes ago",
+								L["<RTM> %s was last seen ~%s minutes ago"],
 								name,
 								math.floor((GetServerTime() - last_death) / 60)
 							),
@@ -154,14 +157,14 @@ function RTM:CreateRareTableEntry(npc_id, parent_frame)
 				elseif self.is_alive[npc_id] then
 					if loc then
 						SendChatMessage(
-							string.format("<RTM> %s seen alive, vignette at ~(%.2f, %.2f)", name, loc.x, loc.y),
+							string.format(L["<RTM> %s seen alive, vignette at ~(%.2f, %.2f)"], name, loc.x, loc.y),
 							target,
 							nil,
 							1
 						)
 					else
 						SendChatMessage(
-							string.format("<RTM> %s seen alive (vignette)", name),
+							string.format(L["<RTM> %s seen alive (vignette)"], name),
 							target,
 							nil,
 							1
@@ -291,9 +294,9 @@ end
 
 function RTM:UpdateShardNumber(shard_number)
 	if shard_number then
-		self.shard_id_frame.status_text:SetText("Shard ID: "..(shard_number + 42))
+		self.shard_id_frame.status_text:SetText(L["Shard ID: "]..(shard_number + 42))
 	else
-		self.shard_id_frame.status_text:SetText("Shard ID: Unknown")
+		self.shard_id_frame.status_text:SetText(L["Shard ID: Unknown"])
 	end
 end
 
@@ -360,7 +363,7 @@ function RTM.InitializeFavoriteIconFrame(f)
 	f.favorite_icon.tooltip.text:SetJustifyH("LEFT")
 	f.favorite_icon.tooltip.text:SetJustifyV("TOP")
 	f.favorite_icon.tooltip.text:SetPoint("TOPLEFT", f.favorite_icon.tooltip, 5, -3)
-	f.favorite_icon.tooltip.text:SetText("Click on the squares to add rares to your favorites.")
+	f.favorite_icon.tooltip.text:SetText(L["Click on the squares to add rares to your favorites."])
 	
 	f.favorite_icon:SetScript("OnEnter",
 		function(self)
@@ -400,31 +403,31 @@ function RTM.InitializeAnnounceIconFrame(f)
 	f.broadcast_icon.tooltip.text1:SetJustifyH("LEFT")
 	f.broadcast_icon.tooltip.text1:SetJustifyV("TOP")
 	f.broadcast_icon.tooltip.text1:SetPoint("TOPLEFT", f.broadcast_icon.tooltip, 5, -3)
-	f.broadcast_icon.tooltip.text1:SetText("Click on the squares to announce rare timers.")
+	f.broadcast_icon.tooltip.text1:SetText(L["Click on the squares to announce rare timers."])
 	
 	f.broadcast_icon.tooltip.text2 = f.broadcast_icon.tooltip:CreateFontString(nil, nil, "GameFontNormal")
 	f.broadcast_icon.tooltip.text2:SetJustifyH("LEFT")
 	f.broadcast_icon.tooltip.text2:SetJustifyV("TOP")
 	f.broadcast_icon.tooltip.text2:SetPoint("TOPLEFT", f.broadcast_icon.tooltip, 5, -15)
-	f.broadcast_icon.tooltip.text2:SetText("Left click: report to general chat")
+	f.broadcast_icon.tooltip.text2:SetText(L["Left click: report to general chat"])
 	
 	f.broadcast_icon.tooltip.text3 = f.broadcast_icon.tooltip:CreateFontString(nil, nil, "GameFontNormal")
 	f.broadcast_icon.tooltip.text3:SetJustifyH("LEFT")
 	f.broadcast_icon.tooltip.text3:SetJustifyV("TOP")
 	f.broadcast_icon.tooltip.text3:SetPoint("TOPLEFT", f.broadcast_icon.tooltip, 5, -27)
-	f.broadcast_icon.tooltip.text3:SetText("Control-left click: report to party/raid chat")
+	f.broadcast_icon.tooltip.text3:SetText(L["Control-left click: report to party/raid chat"])
 	
 	f.broadcast_icon.tooltip.text4 = f.broadcast_icon.tooltip:CreateFontString(nil, nil, "GameFontNormal")
 	f.broadcast_icon.tooltip.text4:SetJustifyH("LEFT")
 	f.broadcast_icon.tooltip.text4:SetJustifyV("TOP")
 	f.broadcast_icon.tooltip.text4:SetPoint("TOPLEFT", f.broadcast_icon.tooltip, 5, -39)
-	f.broadcast_icon.tooltip.text4:SetText("Alt-left click: report to say")
+	f.broadcast_icon.tooltip.text4:SetText(L["Alt-left click: report to say"])
 	  
 	f.broadcast_icon.tooltip.text5 = f.broadcast_icon.tooltip:CreateFontString(nil, nil, "GameFontNormal")
 	f.broadcast_icon.tooltip.text5:SetJustifyH("LEFT")
 	f.broadcast_icon.tooltip.text5:SetJustifyV("TOP")
 	f.broadcast_icon.tooltip.text5:SetPoint("TOPLEFT", f.broadcast_icon.tooltip, 5, -51)
-	f.broadcast_icon.tooltip.text5:SetText("Right click: set waypoint if available")
+	f.broadcast_icon.tooltip.text5:SetText(L["Right click: set waypoint if available"])
 	
 	f.broadcast_icon:SetScript("OnEnter",
 		function(self)
@@ -464,13 +467,13 @@ function RTM:InitializeReloadButton(f)
 	f.reload_button.tooltip.text1:SetJustifyH("LEFT")
 	f.reload_button.tooltip.text1:SetJustifyV("TOP")
 	f.reload_button.tooltip.text1:SetPoint("TOPLEFT", f.reload_button.tooltip, 5, -3)
-	f.reload_button.tooltip.text1:SetText("Reset your data and replace it with the data of others.")
+	f.reload_button.tooltip.text1:SetText(L["Reset your data and replace it with the data of others."])
 	
 	f.reload_button.tooltip.text2 = f.reload_button.tooltip:CreateFontString(nil, nil, "GameFontNormal")
 	f.reload_button.tooltip.text2:SetJustifyH("LEFT")
 	f.reload_button.tooltip.text2:SetJustifyV("TOP")
 	f.reload_button.tooltip.text2:SetPoint("TOPLEFT", f.reload_button.tooltip, 5, -15)
-	f.reload_button.tooltip.text2:SetText("Note: you do not need to press this button to receive new timers.")
+	f.reload_button.tooltip.text2:SetText(L["Note: you do not need to press this button to receive new timers."])
 	
 	-- Hide and show the tooltip on mouseover.
 	f.reload_button:SetScript("OnEnter",
@@ -488,7 +491,7 @@ function RTM:InitializeReloadButton(f)
 	f.reload_button:SetScript("OnClick",
 		function()
 			if self.current_shard_id ~= nil and GetServerTime() - self.last_reload_time > 600 then
-				print("<RTM> Resetting current rare timers and requesting up-to-date data.")
+				print(L["<RTM> Resetting current rare timers and requesting up-to-date data."])
 				self.is_alive = {}
 				self.current_health = {}
 				self.last_recorded_death = {}
@@ -504,12 +507,12 @@ function RTM:InitializeReloadButton(f)
 				-- Re-register your arrival in the shard.
 				RTM:RegisterArrival(self.current_shard_id)
 			elseif self.current_shard_id == nil then
-				print("<RTM> Please target a non-player entity prior to resetting, "..
-						"such that the addon can determine the current shard id.")
+				print(L["<RTM> Please target a non-player entity prior to resetting, "]..
+						L["such that the addon can determine the current shard id."])
 			else
-				print("<RTM> The reset button is on cooldown. Please note that a reset is not needed "..
-					"to receive new timers. If it is your intention to reset the data, "..
-					"please do a /reload and click the reset button again.")
+				print(L["<RTM> The reset button is on cooldown. Please note that a reset is not needed "]..
+					L["to receive new timers. If it is your intention to reset the data, "]..
+					L["please do a /reload and click the reset button again."])
 			end
 		end
 	);
@@ -609,7 +612,7 @@ function RTM.IntializeSoundSelectionMenu(parent_frame)
 	
 	f.label = f:CreateFontString(nil, "BORDER", "GameFontNormal")
 	f.label:SetJustifyH("LEFT")
-	f.label:SetText("Favorite sound alert")
+	f.label:SetText(L["Favorite sound alert"])
 	f.label:SetPoint("TOPLEFT", parent_frame)
 	
 	f:SetPoint("TOPLEFT", f.label, -20, -13)
@@ -622,8 +625,8 @@ function RTM:IntializeMinimapCheckbox(parent_frame)
 		"CheckButton", "RTM.options_panel.minimap_checkbox", parent_frame, "ChatConfigCheckButtonTemplate"
 	)
 	
-	getglobal(f:GetName() .. 'Text'):SetText(" Show minimap icon");
-	f.tooltip = "Show or hide the minimap button.";
+	getglobal(f:GetName() .. 'Text'):SetText(L[" Show minimap icon"]);
+	f.tooltip = L["Show or hide the minimap button."];
 	f:SetScript("OnClick",
 		function()
 			RTMDB.minimap_icon_enabled = not RTMDB.minimap_icon_enabled
@@ -643,9 +646,9 @@ function RTM.IntializeRaidCommunicationCheckbox(parent_frame)
 		"CheckButton", "RTM.options_panel.raid_comms_checkbox", parent_frame, "ChatConfigCheckButtonTemplate"
 	)
 	
-	getglobal(f:GetName() .. 'Text'):SetText(" Enable communication over part/raid channel")
-	f.tooltip = "Enable communication over party/raid channel, "..
-					"to support CRZ functionality while in a party or raid group."
+	getglobal(f:GetName() .. 'Text'):SetText(L[" Enable communication over part/raid channel"])
+	f.tooltip = L["Enable communication over party/raid channel, "]..
+					L["to support CRZ functionality while in a party or raid group."]
 
 	f:SetScript("OnClick",
 		function()
@@ -658,8 +661,8 @@ end
 
 function RTM.IntializeDebugCheckbox(parent_frame)
 	local f = CreateFrame("CheckButton", "RTM.options_panel.debug_checkbox", parent_frame, "ChatConfigCheckButtonTemplate")
-	getglobal(f:GetName() .. 'Text'):SetText(" Enable debug mode");
-	f.tooltip = "Show or hide the minimap button.";
+	getglobal(f:GetName() .. 'Text'):SetText(L[" Enable debug mode"]);
+	f.tooltip = L["Show or hide the minimap button."];
 	f:SetScript("OnClick",
 		function()
 			RTMDB.debug_enabled = not RTMDB.debug_enabled
@@ -671,7 +674,7 @@ end
 
 function RTM:IntializeScaleSlider(parent_frame)
 	local f = CreateFrame("Slider", "RTM.options_panel.scale_slider", parent_frame, "OptionsSliderTemplate")
-	f.tooltip = "Set the scale of the rare window.";
+	f.tooltip = L["Set the scale of the rare window."];
 	f:SetMinMaxValues(0.5, 2)
 	f:SetValueStep(0.05)
 	f:SetValue(RTMDB.window_scale)
@@ -684,14 +687,14 @@ function RTM:IntializeScaleSlider(parent_frame)
 			value = math.floor(value * 20) / 20
 		
 			RTMDB.window_scale = value
-			self2.label:SetText("Rare window scale "..string.format("(%.2f)", RTMDB.window_scale))
+			self2.label:SetText(L["Rare window scale "]..string.format("(%.2f)", RTMDB.window_scale))
 			RTM:SetScale(RTMDB.window_scale)
 		end
 	);
 	
 	f.label = f:CreateFontString(nil, "BORDER", "GameFontNormal")
 	f.label:SetJustifyH("LEFT")
-	f.label:SetText("Rare window scale "..string.format("(%.2f)", RTMDB.window_scale))
+	f.label:SetText(L["Rare window scale "]..string.format("(%.2f)", RTMDB.window_scale))
 	f.label:SetPoint("TOPLEFT", parent_frame, 0, -125)
 	
 	f:SetPoint("TOPLEFT", f.label, 5, -15)
@@ -702,7 +705,7 @@ function RTM:InitializeButtons(parent_frame)
 		"Button", "RTM.options_panel.reset_favorites_button", parent_frame, 'UIPanelButtonTemplate'
 	)
 	
-	parent_frame.reset_favorites_button:SetText("Reset Favorites")
+	parent_frame.reset_favorites_button:SetText(L["Reset Favorites"])
 	parent_frame.reset_favorites_button:SetSize(150, 25)
 	parent_frame.reset_favorites_button:SetPoint("TOPLEFT", parent_frame, 0, -175)
 	parent_frame.reset_favorites_button:SetScript("OnClick",
@@ -716,7 +719,7 @@ function RTM:InitializeButtons(parent_frame)
 		"Button", "RTM.options_panel.reset_blacklist_button", parent_frame, 'UIPanelButtonTemplate'
 	)
 	
-	parent_frame.reset_blacklist_button:SetText("Reset Blacklist")
+	parent_frame.reset_blacklist_button:SetText(L["Reset Blacklist"])
 	parent_frame.reset_blacklist_button:SetSize(150, 25)
 	parent_frame.reset_blacklist_button:SetPoint("TOPRIGHT", parent_frame.reset_favorites_button, 155, 0)
 	parent_frame.reset_blacklist_button:SetScript("OnClick",
@@ -747,7 +750,7 @@ function RTM:CreateRareSelectionEntry(npc_id, parent_frame, entry_data)
 		function()
 			if not RTMDB.ignore_rare[npc_id] then
 				if RTMDB.favorite_rares[npc_id] then
-					print("<RTM> Favorites cannot be hidden.")
+					print(L["<RTM> Favorites cannot be hidden."])
 				else
 					RTMDB.ignore_rare[npc_id] = true
 					f.enable.texture:SetColorTexture(1, 0, 0, 1)
@@ -846,7 +849,7 @@ function RTM:DisableAllRaresButton(parent_frame)
 		"Button", "RTM.options_panel.rare_selection.reset_all_button", parent_frame, 'UIPanelButtonTemplate'
 	)
 	
-	parent_frame.reset_all_button:SetText("Disable All")
+	parent_frame.reset_all_button:SetText(L["Disable All"])
 	parent_frame.reset_all_button:SetSize(150, 25)
 	parent_frame.reset_all_button:SetPoint("TOPRIGHT", parent_frame, 0, 0)
 	parent_frame.reset_all_button:SetScript("OnClick",
@@ -868,7 +871,7 @@ function RTM:EnableAllRaresButton(parent_frame)
 		"Button", "RTM.options_panel.rare_selection.enable_all_button", parent_frame, 'UIPanelButtonTemplate'
 	)
 	
-	parent_frame.enable_all_button:SetText("Enable All")
+	parent_frame.enable_all_button:SetText(L["Enable All"])
 	parent_frame.enable_all_button:SetSize(150, 25)
 	parent_frame.enable_all_button:SetPoint("TOPRIGHT", parent_frame, 0, -25)
 	parent_frame.enable_all_button:SetScript("OnClick",
@@ -888,7 +891,7 @@ function RTM:ResetRareOrderButton(parent_frame)
 		"Button", "RTM.options_panel.rare_selection.reset_order_button", parent_frame, 'UIPanelButtonTemplate'
 	)
 	
-	parent_frame.reset_order_button:SetText("Reset Order")
+	parent_frame.reset_order_button:SetText(L["Reset Order"])
 	parent_frame.reset_order_button:SetSize(150, 25)
 	parent_frame.reset_order_button:SetPoint("TOPRIGHT", parent_frame, 0, -50)
 	parent_frame.reset_order_button:SetScript("OnClick",
@@ -906,7 +909,7 @@ end
 
 function RTM:InitializeRareSelectionChildMenu(parent_frame)
 	parent_frame.rare_selection = CreateFrame("Frame", "RTM.options_panel.rare_selection", parent_frame)
-	parent_frame.rare_selection.name = "Rare ordering/selection"
+	parent_frame.rare_selection.name = L["Rare ordering/selection"]
 	parent_frame.rare_selection.parent = parent_frame.name
 	InterfaceOptions_AddCategory(parent_frame.rare_selection)
 	

@@ -10,6 +10,9 @@ local UnitHealthMax = UnitHealthMax
 local UIParent = UIParent
 local C_ChatInfo = C_ChatInfo
 
+--localization
+local L = LibStub ("AceLocale-3.0"):GetLocale ("RareTrackerMechagon", true)
+
 -- ####################################################################
 -- ##                              Core                              ##
 -- ####################################################################
@@ -166,8 +169,8 @@ local RTM_LDB = LibStub("LibDataBroker-1.1"):NewDataObject("RTM_icon_object", {
 	end,
 	OnTooltipShow = function(tooltip)
 		tooltip:SetText("RTM")
-		tooltip:AddLine("Left-click: hide/show RTM", 1, 1, 1)
-		tooltip:AddLine("Right-click: show options", 1, 1, 1)
+		tooltip:AddLine(L["Left-click: hide/show RTM"], 1, 1, 1)
+		tooltip:AddLine(L["Right-click: show options"], 1, 1, 1)
 		tooltip:Show()
 	end
 })
