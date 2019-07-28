@@ -16,6 +16,8 @@ local COMBATLOG_OBJECT_TYPE_GUARDIAN = COMBATLOG_OBJECT_TYPE_GUARDIAN
 local COMBATLOG_OBJECT_TYPE_PET = COMBATLOG_OBJECT_TYPE_PET
 local COMBATLOG_OBJECT_TYPE_OBJECT = COMBATLOG_OBJECT_TYPE_OBJECT
 
+--localization
+local L = LibStub ("AceLocale-3.0"):GetLocale ("RareTrackerMechagon", true)
 
 -- ####################################################################
 -- ##                         Event Handlers                         ##

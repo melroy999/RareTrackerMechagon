@@ -14,6 +14,9 @@ local GetNumDisplayChannels = GetNumDisplayChannels
 local LeaveChannelByName = LeaveChannelByName
 local PlaySoundFile = PlaySoundFile
 
+--localization
+local L = LibStub ("AceLocale-3.0"):GetLocale ("RareTrackerMechagon", true)
+
 -- ####################################################################
 -- ##                         Communication                          ##
 -- ####################################################################
