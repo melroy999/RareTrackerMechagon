@@ -65,7 +65,7 @@ function RTM:CheckForShardChange(zone_uid)
 	local has_changed = false
 
 	if self.current_shard_id ~= zone_uid and zone_uid ~= nil then
-		print("<RTM> Moving to shard", (zone_uid + 42)..".")
+		print(L["<RTM> Moving to shard"], (zone_uid + 42)..".")
 		self:UpdateShardNumber(zone_uid)
 		has_changed = true
 		
@@ -83,9 +83,9 @@ function RTM:CheckForShardChange(zone_uid)
 	return has_changed
 end
 
-function RTM.CheckForFutureMecharantula(npc_id)
+function RTM.CheckForRedirectedRareIds(npc_id)
 	-- Next, we check whether this is Mecharantula.
-		if npc_id == 151672 then
+	if npc_id == 151672 then
 		-- Check if the player has the time displacement buff.
 		for i=1, 40 do
 			local spell_id = select(10, UnitBuff("player", i))
@@ -122,7 +122,7 @@ function RTM:OnTargetChanged()
 		end
 		
 		--A special check for the future variant for Mecharantula, which for some reason has a duplicate NPC id.
-		npc_id = self.CheckForFutureMecharantula(npc_id)
+		npc_id = self.CheckForRedirectedRareIds(npc_id)
 		
 		if unittype == "Creature" and self.rare_ids_set[npc_id] then
 			-- Find the health of the entity.
@@ -169,7 +169,7 @@ function RTM:OnUnitHealth(unit)
 		end
 		
 		--A special check for the future variant for Mecharantula, which for some reason has a duplicate NPC id.
-		npc_id = self.CheckForFutureMecharantula(npc_id)
+		npc_id = self.CheckForRedirectedRareIds(npc_id)
 		
 		if self.rare_ids_set[npc_id] then
 			-- Update the current health of the entity.
@@ -225,12 +225,18 @@ function RTM:OnCombatLogEvent()
 	end
 	
 	--A special check for the future variant for Mecharantula, which for some reason has a duplicate NPC id.
-	npc_id = self.CheckForFutureMecharantula(npc_id)
+	npc_id = self.CheckForRedirectedRareIds(npc_id)
 		
-	if subevent == "UNIT_DIED" then
-		if self.rare_ids_set[npc_id] then
+    if unittype == "Creature" and self.rare_ids_set[npc_id] then
+		if subevent == "UNIT_DIED" then
 			-- Mark the entity has dead and report to your peers.
 			self:RegisterEntityDeath(self.current_shard_id, npc_id, spawn_uid)
+		elseif subevent ~= "PARTY_KILL" then
+			-- Report the entity as alive to your peers, if it is not marked as alive already.
+			if self.is_alive[npc_id] == nil then
+				-- The combat log range is quite long, so no coordinates can be provided.
+				self:RegisterEntityAlive(self.current_shard_id, npc_id, spawn_uid, nil, nil)
+			end
 		end
 	end
 end
@@ -266,7 +272,7 @@ function RTM:OnVignetteMinimapUpdated(vignetteGUID, _)
 			end
 			
 			--A special check for the future variant for Mecharantula, which for some reason has a duplicate NPC id.
-			npc_id = self.CheckForFutureMecharantula(npc_id)
+			npc_id = self.CheckForRedirectedRareIds(npc_id)
 			
 			if self.rare_ids_set[npc_id] and not self.reported_vignettes[vignetteGUID] then
 				self.reported_vignettes[vignetteGUID] = {npc_id, spawn_uid}
@@ -314,12 +320,12 @@ RTM.last_icon_change = 0
 
 -- Called on every addon message received by the addon.
 function RTM:OnUpdate()
-	if (self.last_display_update + 0.25 < GetServerTime()) then
+	if (self.last_display_update + 1 < GetTime()) then
 		for i=1, #self.rare_ids do
 			local npc_id = self.rare_ids[i]
 			
 			-- It might occur that the rare is marked as alive, but no health is known.
-			-- If 20 seconds pass without a health value, the alive tag will be reset.
+			-- If two minutes pass without a health value, the alive tag will be reset.
 			if self.is_alive[npc_id] and not self.current_health[npc_id] and GetServerTime() - self.is_alive[npc_id] > 120 then
 				self.is_alive[npc_id] = nil
 			end
@@ -334,11 +340,11 @@ function RTM:OnUpdate()
 			self:UpdateStatus(npc_id)
 		end
 		
-		self.last_display_update = GetServerTime()
+		self.last_display_update = GetTime()
 	end
 	
-	if self.last_icon_change + 2 < GetServerTime() then
-		self.last_icon_change = GetServerTime()
+	if self.last_icon_change + 2 < GetTime() then
+		self.last_icon_change = GetTime()
 		
 		self.broadcast_icon.icon_state = not self.broadcast_icon.icon_state
 		
@@ -381,6 +387,12 @@ function RTM:OnAddonLoaded()
 		
 		if not RTMDB.banned_NPC_ids then
 			RTMDB.banned_NPC_ids = {}
+		else
+			-- As a precaution, we remove all rares from the blacklist.
+			for i=1, #self.rare_ids do
+				local npc_id = self.rare_ids[i]
+				RTMDB.banned_NPC_ids[npc_id] = nil
+			end
 		end
 		
 		if not RTMDB.window_scale then
@@ -417,7 +429,7 @@ function RTM:OnAddonLoaded()
 		-- Remove any data in the previous records that has expired.
 		for key, _ in pairs(RTMDB.previous_records) do
 			if GetServerTime() - RTMDB.previous_records[key].time_stamp > 900 then
-				print("<RTM> Removing cached data for shard", (key + 42)..".")
+				print(L["<RTM> Removing cached data for shard"], (key + 42)..".")
 				RTMDB.previous_records[key] = nil
 			end
 		end
@@ -485,12 +497,12 @@ RTM:RegisterEvent("PLAYER_LOGOUT")
 RTM.chat_frame_loaded = false
 
 RTM.message_delay_frame = CreateFrame("Frame", "RTM.message_delay_frame", RTM)
-RTM.message_delay_frame.start_time = GetServerTime()
+RTM.message_delay_frame.start_time = GetTime()
 RTM.message_delay_frame:SetScript("OnUpdate",
 	function(self)
-		if GetServerTime() - self.start_time > 0 then
+		if GetTime() - self.start_time > 0 then
 			if #{GetChannelList()} == 0 then
-				self.start_time = GetServerTime()
+				self.start_time = GetTime()
 			else
 				RTM.chat_frame_loaded = true
 				self:SetScript("OnUpdate", nil)

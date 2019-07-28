@@ -128,7 +128,7 @@ function RTM:CreateRareTableEntry(npc_id, parent_frame)
 						)
 					else
 						SendChatMessage(
-							string.format(L["<RTM> %s (%s%%) seen at ~(N/A)"], name, health),
+							string.format("<RTM> %s (%s%%)", name, health),
 							target,
 							nil,
 							1
@@ -164,7 +164,7 @@ function RTM:CreateRareTableEntry(npc_id, parent_frame)
 						)
 					else
 						SendChatMessage(
-							string.format(L["<RTM> %s seen alive (vignette)"], name),
+							string.format("<RTM> %s seen alive (combat log)", name),
 							target,
 							nil,
 							1

@@ -2,6 +2,7 @@
 local UnitName = UnitName
 local GetRealmName = GetRealmName
 local GetServerTime = GetServerTime
+local GetTime = GetTime
 local C_ChatInfo = C_ChatInfo
 local strsplit = strsplit
 local CreateFrame = CreateFrame
@@ -43,10 +44,10 @@ RTM.last_message_sent["RAID"] = 0
 
 -- A function that acts as a rate limiter for channel messages.
 function RTM:SendRateLimitedAddonMessage(message, target, target_id, target_channel)
-	-- We only allow one message to be sent every ~4 seconds.
-	if GetServerTime() - self.last_message_sent[target_channel] > 4 then
+	-- We only allow one message to be sent every ~5 seconds.
+	if GetTime() - self.last_message_sent[target_channel] > 5 then
 		C_ChatInfo.SendAddonMessage("RTM", message, target, target_id)
-		self.last_message_sent[target_channel] = GetServerTime()
+		self.last_message_sent[target_channel] = GetTime()
 	end
 end
 
@@ -92,10 +93,10 @@ end
 -- A function that enables the delayed execution of a function.
 function RTM:DelayedExecution(delay, _function)
 	local frame = CreateFrame("Frame", "RTM.message_delay_frame", self)
-	frame.start_time = GetServerTime()
+	frame.start_time = GetTime()
 	frame:SetScript("OnUpdate",
 		function(self2)
-			if GetServerTime() - self2.start_time > delay then
+			if GetTime() - self2.start_time > delay then
 				_function()
 				self2:SetScript("OnUpdate", nil)
 				self2:Hide()
@@ -114,7 +115,7 @@ function RTM:RegisterArrival(shard_id)
 	-- Attempt to load previous data from our cache.
 	if RTMDB.previous_records[shard_id] then
 		if GetServerTime() - RTMDB.previous_records[shard_id].time_stamp < 900 then
-			print("<RTM> Restoring data from previous session in shard "..(shard_id + 42)..".")
+			print(L["<RTM> Restoring data from previous session in shard "]..(shard_id + 42)..".")
 			self.last_recorded_death = RTMDB.previous_records[shard_id].time_table
 		else
 			RTMDB.previous_records[shard_id] = nil
@@ -138,7 +139,7 @@ function RTM:RegisterArrival(shard_id)
 		
 		-- We want to avoid overwriting existing channel numbers. So delay the channel join.
 		self:DelayedExecution(1, function()
-				print("<RTM> Requesting rare kill data for shard "..(shard_id + 42)..".")
+				print(L["<RTM> Requesting rare kill data for shard "]..(shard_id + 42)..".")
 				C_ChatInfo.SendAddonMessage(
 					"RTM",
 					"A-"..shard_id.."-"..self.version..":"..self.arrival_register_time,
@@ -355,7 +356,7 @@ end
 -- Inform the others the health of a specific entity.
 function RTM:RegisterEntityHealth(shard_id, npc_id, spawn_uid, percentage)
 	if not self.last_health_report["CHANNEL"][npc_id]
-		or GetServerTime() - self.last_health_report["CHANNEL"][npc_id] > 2 then
+		or GetTime() - self.last_health_report["CHANNEL"][npc_id] > 2 then
 		-- Mark the entity as targeted and alive.
 		self.is_alive[npc_id] = GetServerTime()
 		self.current_health[npc_id] = percentage
@@ -371,7 +372,7 @@ function RTM:RegisterEntityHealth(shard_id, npc_id, spawn_uid, percentage)
 	end
 	
 	if RTMDB.enable_raid_communication and (UnitInRaid("player") or UnitInParty("player")) then
-		if not self.last_health_report["RAID"][npc_id] or GetServerTime() - self.last_health_report["RAID"][npc_id] > 2 then
+		if not self.last_health_report["RAID"][npc_id] or GetTime() - self.last_health_report["RAID"][npc_id] > 2 then
 			-- Mark the entity as targeted and alive.
 			self.is_alive[npc_id] = GetServerTime()
 			self.current_health[npc_id] = percentage
@@ -413,7 +414,7 @@ function RTM:AcknowledgeEntityAlive(npc_id, spawn_uid, x, y)
 		self.is_alive[npc_id] = GetServerTime()
 		self:UpdateStatus(npc_id)
 		
-		if x and y then
+		if x ~= nil and y ~= nil then
 			self.current_coordinates[npc_id] = {}
 			self.current_coordinates[npc_id].x = x
 			self.current_coordinates[npc_id].y = y
@@ -452,7 +453,7 @@ function RTM:AcknowledgeEntityHealth(npc_id, spawn_uid, percentage)
 		self.last_recorded_death[npc_id] = nil
 		self.is_alive[npc_id] = GetServerTime()
 		self.current_health[npc_id] = percentage
-		self.last_health_report["CHANNEL"][npc_id] = GetServerTime()
+		self.last_health_report["CHANNEL"][npc_id] = GetTime()
 		self:UpdateStatus(npc_id)
 		
 		if RTMDB.favorite_rares[npc_id] and not self.reported_spawn_uids[spawn_uid] then
@@ -469,7 +470,7 @@ function RTM:AcknowledgeEntityHealthRaid(npc_id, spawn_uid, percentage)
 		self.last_recorded_death[npc_id] = nil
 		self.is_alive[npc_id] = GetServerTime()
 		self.current_health[npc_id] = percentage
-		self.last_health_report["RAID"][npc_id] = GetServerTime()
+		self.last_health_report["RAID"][npc_id] = GetTime()
 		self:UpdateStatus(npc_id)
 		
 		if RTMDB.favorite_rares[npc_id] and not self.reported_spawn_uids[spawn_uid] then
@@ -489,8 +490,8 @@ function RTM:OnChatMessageReceived(player, prefix, shard_id, addon_version, payl
 	-- The format of messages might change over time and as such, versioning is needed.
 	-- To ensure optimal performance, all users should use the latest version.
 	if not reported_version_mismatch and self.version < addon_version and addon_version ~= 9001 then
-		print("<RTM> Your version or RareTrackerMechagon is outdated. "..
-			"Please update to the most recent version at the earliest convenience.")
+		print(L["<RTM> Your version or RareTrackerMechagon is outdated. "]..
+			L["Please update to the most recent version at the earliest convenience."])
 		reported_version_mismatch = true
 	end
 	
