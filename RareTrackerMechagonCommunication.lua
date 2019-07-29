@@ -28,9 +28,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RareTrackerMechagon", true)
 -- The time at which you broad-casted the joined the shard group.
 RTM.arrival_register_time = nil
 
--- The name and realm of the player.
-local player_name = UnitName("player").."-"..GetRealmName()
-
 -- A flag that ensures that the version warning is only given once per session.
 local reported_version_mismatch = false
 
@@ -229,7 +226,7 @@ end
 -- Acknowledge that the player has arrived and whisper your data table.
 function RTM:AcknowledgeArrival(player, time_stamp)
 	-- Notify the newly arrived user of your presence through a whisper.
-	if player_name ~= player then
+	if self.player_name ~= player then
 		self:RegisterPresenceWhisper(self.current_shard_id, player, time_stamp)
 	end
 end
@@ -237,7 +234,7 @@ end
 -- Acknowledge that the player has arrived and whisper your data table.
 function RTM:AcknowledgeArrivalGroup(player, time_stamp)
 	-- Notify the newly arrived user of your presence through a whisper.
-	if player_name ~= player then
+	if self.player_name ~= player then
 		if RTMDB.enable_raid_communication and (UnitInRaid("player") or UnitInParty("player")) then
 			self:RegisterPresenceGroup(self.current_shard_id, time_stamp)
 		end

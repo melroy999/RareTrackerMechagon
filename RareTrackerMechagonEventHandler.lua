@@ -9,6 +9,7 @@ local GetServerTime = GetServerTime
 local LinkedSet = LinkedSet
 local CreateFrame = CreateFrame
 local GetChannelList = GetChannelList
+local IsQuestFlaggedCompleted = IsQuestFlaggedCompleted
 
 -- Redefine often used variables locally.
 local C_Map = C_Map
@@ -366,10 +367,6 @@ function RTM:OnAddonLoaded()
 			RTMDB.favorite_rares = {}
 		end
 		
-		if not RTMDB.previous_records then
-			RTMDB.previous_records = {}
-		end
-		
 		if not RTMDB.selected_sound_number then
 			RTMDB.selected_sound_number = 552503
 		end
@@ -413,16 +410,12 @@ function RTM:OnAddonLoaded()
 		else
 			RTMDB.rare_ordering = LinkedSet:New(RTMDB.rare_ordering)
 		end
-		
-		-- Initialize the frame.
-		self:InitializeInterface()
-		self:CorrectFavoriteMarks()
-		
-		-- Initialize the configuration menu.
-		self:InitializeConfigMenu()
-		
-		self:RegisterMapIcon()
-		
+    
+		-- Remember the timers for a while, such that we can restore them after a reload or relog.
+		if not RTMDB.previous_records then
+			RTMDB.previous_records = {}
+		end
+    
 		-- Remove any data in the previous records that has expired.
 		for key, _ in pairs(RTMDB.previous_records) do
 			if GetServerTime() - RTMDB.previous_records[key].time_stamp > 900 then
@@ -430,6 +423,49 @@ function RTM:OnAddonLoaded()
 				RTMDB.previous_records[key] = nil
 			end
 		end
+    
+		-- Next, we have to initialize the daily kill tracker.
+		local daily_lockout_id = RTM.GetDailyLockoutIdentifier()
+		if not RTMDB.daily_kill_table then
+		  RTMDB.daily_kill_table = {}
+		else
+			-- Remove the entries that are outdated.
+			for key, _ in pairs(RTMDB.daily_kill_table) do
+				if key < daily_lockout_id then
+					RTMDB.daily_kill_table[key] = nil
+				end
+			end
+		end
+        
+        -- Make sure that all rares we have killed today are tracked.
+        self:CreateDailyKillTableEntries(daily_lockout_id)
+        
+        for completion_flag, npc_ids in pairs(self.completion_quest_inverse) do
+            if IsQuestFlaggedCompleted(completion_flag) then
+                for _, target_npc_id in pairs(npc_ids) do
+                    RTMDB.daily_kill_table[daily_lockout_id][target_npc_id][self.player_name] = true
+                end
+            end
+        end
+		
+		-- Create a list of character names.
+		if RTMDB.characters == nil then
+			RTMDB.characters = {}
+		end
+
+		RTMDB.characters[self.player_name] = {}
+		RTMDB.characters[self.player_name].name = UnitName("player")
+		RTMDB.characters[self.player_name].realm = GetRealmName()
+			
+		-- Initialize the frame.
+		self:InitializeInterface()
+		self:CorrectFavoriteMarks()
+		
+		-- Initialize the configuration menu.
+		self:InitializeConfigMenu()
+			
+		-- Create the minimap button.
+		self:RegisterMapIcon()
 		
 		self.is_loaded = true
 	end

@@ -5,6 +5,8 @@ local InterfaceOptionsFrame_OpenToCategory = InterfaceOptionsFrame_OpenToCategor
 local LibStub = LibStub
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
+local GetServerTime = GetServerTime
+local GetQuestResetTime = GetQuestResetTime
 
 -- Redefine global variables locally.
 local UIParent = UIParent
@@ -54,6 +56,9 @@ RTM.last_zone_id = nil
 
 -- Check whether the addon has loaded.
 RTM.is_loaded = false
+
+-- The name and realm of the player.
+RTM.player_name = UnitName("player").."-"..GetRealmName()
 
 -- ####################################################################
 -- ##                         Saved Variables                        ##
@@ -146,6 +151,14 @@ function RTM:CloseInterface()
 	-- Hide the interface.
 	self:Hide()
 end
+
+-- Get a unique time stamp for the current daily lockout.
+function RTM.GetDailyLockoutIdentifier()
+  local time_table = date("*t", GetServerTime() + GetQuestResetTime())
+  --print(date("%m/%d/%y %H:%M:%S", GetServerTime() + GetQuestResetTime()))
+  return 365 * time_table.year + 12 * time_table.month + 31 * time_table.day
+end
+
 
 -- ####################################################################
 -- ##                          Minimap Icon                          ##

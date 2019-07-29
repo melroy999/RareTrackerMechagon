@@ -308,10 +308,28 @@ function RTM:CorrectFavoriteMarks()
 	end
 end
 
+function RTM:CreateDailyKillTableEntries(daily_lockout_id)
+    if RTMDB.daily_kill_table[daily_lockout_id] == nil then
+        -- Make sure that entries exist for all rares for today's tracking.
+        RTMDB.daily_kill_table[daily_lockout_id] = {}
+
+        for i=1, #self.rare_ids do
+            local npc_id = self.rare_ids[i]
+      
+            if RTMDB.daily_kill_table[daily_lockout_id][npc_id] == nil then
+                RTMDB.daily_kill_table[daily_lockout_id][npc_id] = {}
+            end
+        end
+    end
+end
+
 function RTM:UpdateDailyKillMark(npc_id)
 	if not self.completion_quest_ids[npc_id] then
 		return
 	end
+    
+    local daily_lockout_id = RTM.GetDailyLockoutIdentifier()
+    RTM:CreateDailyKillTableEntries(daily_lockout_id)
 	
 	-- Multiple NPCs might share the same quest id.
 	local completion_quest_id = self.completion_quest_ids[npc_id]
@@ -321,6 +339,7 @@ function RTM:UpdateDailyKillMark(npc_id)
 		if self.completion_quest_ids[target_npc_id] and IsQuestFlaggedCompleted(self.completion_quest_ids[target_npc_id]) then
 			self.entities_frame.entities[target_npc_id].name:SetText(self.rare_names[target_npc_id])
 			self.entities_frame.entities[target_npc_id].name:SetFontObject("GameFontRed")
+            RTMDB.daily_kill_table[daily_lockout_id][npc_id][self.player_name] = true
 		else
 			self.entities_frame.entities[target_npc_id].name:SetText(self.rare_names[target_npc_id])
 			self.entities_frame.entities[target_npc_id].name:SetFontObject("GameFontNormal")
