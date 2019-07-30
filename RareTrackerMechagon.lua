@@ -167,7 +167,7 @@ end
 local RTM_LDB = LibStub("LibDataBroker-1.1"):NewDataObject("RTM_icon_object", {
 	type = "data source",
 	text = "RTM",
-	icon = "Interface\\Icons\\inv_gizmo_goblingtonkcontroller",
+	icon = "Interface\\AddOns\\RareTrackerMechagon\\Icons\\RareTrackerIcon",
 	OnClick = function(_, button)
 		if button == "LeftButton" then
 			if RTM.last_zone_id and RTM.target_zones[RTM.last_zone_id] then

@@ -16,6 +16,7 @@ local C_Map = C_Map
 local COMBATLOG_OBJECT_TYPE_GUARDIAN = COMBATLOG_OBJECT_TYPE_GUARDIAN
 local COMBATLOG_OBJECT_TYPE_PET = COMBATLOG_OBJECT_TYPE_PET
 local COMBATLOG_OBJECT_TYPE_OBJECT = COMBATLOG_OBJECT_TYPE_OBJECT
+local UIParent = UIParent
 
 -- ####################################################################
 -- ##                      Localization Support                      ##
@@ -521,6 +522,35 @@ RTM:RegisterEvent("ADDON_LOADED")
 RTM:RegisterEvent("PLAYER_LOGOUT")
 
 -- ####################################################################
+-- ##                      Daily Reset Handling                      ##
+-- ####################################################################
+
+local daily_reset_handling_frame = CreateFrame("Frame", "daily_reset_handling_frame", UIParent)
+
+-- Which timestamp was the last hour?
+local time_table = date("*t", GetServerTime())
+time_table.sec = 0
+time_table.min = 0
+
+-- Check when the next hourly reset is going to be, by adding 3600 to the previous hour timestamp.
+daily_reset_handling_frame.target_time = time(time_table) + 3600 + 60
+
+-- Add an OnUpdate checker.
+daily_reset_handling_frame:SetScript("OnUpdate",
+	function(self)
+		if GetServerTime() > self.target_time then
+			self.target_time = self.target_time + 3600
+            
+            if RTM.entities_frame ~= nil then
+                RTM:UpdateAllDailyKillMarks()
+                RTM.Debug("<RTM> Updating daily kill marks.")
+            end
+		end
+	end
+)
+daily_reset_handling_frame:Show()
+
+-- ####################################################################
 -- ##                       Channel Wait Frame                       ##
 -- ####################################################################
 
@@ -529,13 +559,13 @@ RTM:RegisterEvent("PLAYER_LOGOUT")
 -- Thus, we block certain events until these chats have been loaded.
 RTM.chat_frame_loaded = false
 
-RTM.message_delay_frame = CreateFrame("Frame", "RTM.message_delay_frame", RTM)
-RTM.message_delay_frame.start_time = GetTime()
-RTM.message_delay_frame:SetScript("OnUpdate",
+local message_delay_frame = CreateFrame("Frame", "RTM.message_delay_frame", UIParent)
+message_delay_frame.start_time = GetServerTime()
+message_delay_frame:SetScript("OnUpdate",
 	function(self)
-		if GetTime() - self.start_time > 0 then
+		if GetServerTime() - self.start_time > 0 then
 			if #{GetChannelList()} == 0 then
-				self.start_time = GetTime()
+				self.start_time = GetServerTime()
 			else
 				RTM.chat_frame_loaded = true
 				self:SetScript("OnUpdate", nil)
@@ -544,4 +574,4 @@ RTM.message_delay_frame:SetScript("OnUpdate",
 		end
 	end
 )
-RTM.message_delay_frame:Show()
+message_delay_frame:Show()
