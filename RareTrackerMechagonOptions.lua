@@ -129,7 +129,6 @@ end
 function RTM.IntializeDebugCheckbox(parent_frame)
 	local f = CreateFrame("CheckButton", "RTM.options_panel.debug_checkbox", parent_frame, "ChatConfigCheckButtonTemplate")
 	getglobal(f:GetName() .. 'Text'):SetText(L[" Enable debug mode"]);
-	f.tooltip = L["Show or hide the minimap button."];
 	f:SetScript("OnClick",
 		function()
 			RTMDB.debug_enabled = not RTMDB.debug_enabled
