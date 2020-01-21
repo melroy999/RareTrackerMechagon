@@ -113,8 +113,16 @@ function RTM:StartInterface()
 	
 	if RTMDB.minimap_icon_enabled then
 		self.icon:Show("RTM_icon")
+        if Bazooka then
+            local plugin = Bazooka.plugins["RTM"]
+            plugin.db.enabled = true
+            plugin:applySettings()
+        end
 	else
 		self.icon:Hide("RTM_icon")
+        if Bazooka then
+            Bazooka:disablePlugin(Bazooka.plugins["RTM"])
+        end
 	end
 	
 	if C_ChatInfo.RegisterAddonMessagePrefix("RTM") ~= true then
@@ -142,6 +150,9 @@ function RTM:CloseInterface()
 	self:RegisterDeparture(self.current_shard_id)
 	self:UnregisterEvents()
 	self.icon:Hide("RTM_icon")
+    if Bazooka then
+        Bazooka:disablePlugin(Bazooka.plugins["RTM"])
+    end
 	
 	-- Hide the interface.
 	self:Hide()
@@ -151,7 +162,7 @@ end
 -- ##                          Minimap Icon                          ##
 -- ####################################################################
 
-local RTM_LDB = LibStub("LibDataBroker-1.1"):NewDataObject("RTM_icon_object", {
+local RTM_LDB = LibStub("LibDataBroker-1.1"):NewDataObject("RTM", {
 	type = "data source",
 	text = "RTM",
 	icon = "Interface\\AddOns\\RareTrackerMechagon\\Icons\\RareTrackerIcon",

@@ -99,8 +99,16 @@ function RTM:IntializeMinimapCheckbox(parent_frame)
 			RTMDB.minimap_icon_enabled = not RTMDB.minimap_icon_enabled
 			if not RTMDB.minimap_icon_enabled then
 				self.icon:Hide("RTM_icon")
+                if Bazooka then
+                    Bazooka:disablePlugin(Bazooka.plugins["RTM"])
+                end
 			elseif RTM.target_zones[C_Map.GetBestMapForUnit("player")] then
 				self.icon:Show("RTM_icon")
+                if Bazooka then
+                    local plugin = Bazooka.plugins["RTM"]
+                    plugin.db.enabled = true
+                    plugin:applySettings()
+                end
 			end
 		end
 	);

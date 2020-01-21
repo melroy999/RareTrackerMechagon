@@ -386,7 +386,6 @@ end
 function RTM:OnAddonLoaded()
 	-- OnAddonLoaded might be called multiple times. We only want it to do so once.
 	if not self.is_loaded then
-		
 		if RTMDB.show_window == nil then
 			RTMDB.show_window = true
 		end
