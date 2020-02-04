@@ -78,9 +78,6 @@ function RTM:RegisterEvents()
     self:RegisterEvent("VIGNETTE_MINIMAP_UPDATED")
     self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
     self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
-    self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-    self:RegisterEvent("PLAYER_ENTERING_WORLD")
-    self:RegisterEvent("ZONE_CHANGED")
 end
 
 -- Unregister from the events, to disable the tracking functionality.
@@ -92,7 +89,4 @@ function RTM:UnregisterEvents()
     self:UnregisterEvent("VIGNETTE_MINIMAP_UPDATED")
     self:UnregisterEvent("CHAT_MSG_MONSTER_YELL")
     self:UnregisterEvent("CHAT_MSG_MONSTER_EMOTE")
-    self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
-    self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-    self:UnregisterEvent("ZONE_CHANGED")
 end
