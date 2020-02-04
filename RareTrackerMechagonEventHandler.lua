@@ -61,7 +61,7 @@ function RTM:OnChatMsgMonsterEmote(...)
             -- We found a match.
             self.is_alive[npc_id] = GetServerTime()
             self.current_coordinates[npc_id] = self.rare_coordinates[npc_id]
-            RT:PlaySoundNotification(npc_id, npc_id)
+            self:PlaySoundNotification(npc_id, npc_id)
             return
         end
     end
