@@ -36,6 +36,8 @@ function RTM:OnEvent(event, ...)
 		self:OnUnitHealth(...)
 	elseif event == "COMBAT_LOG_EVENT_UNFILTERED" and RT.chat_frame_loaded then
 		self:OnCombatLogEvent()
+    elseif event == "ZONE_CHANGED_NEW_AREA" or event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED" then
+        self:OnZoneTransition()
 	elseif event == "CHAT_MSG_ADDON" then
 		self:OnChatMsgAddon(...)
 	elseif event == "VIGNETTE_MINIMAP_UPDATED" and RT.chat_frame_loaded then
