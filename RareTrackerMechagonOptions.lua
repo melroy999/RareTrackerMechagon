@@ -12,6 +12,25 @@ local L = LibStub("AceLocale-3.0"):GetLocale("RareTrackerMechagon", true)
 function RTM:InitializeRareTrackerDatabase()
     self.defaults = RT.GetDefaultModuleDatabaseValues()
     
+    -- Copy over settings from the previous version, if possible.
+    if RTMDB then
+        -- Copy over the favorite rares, ignored rares and window scale.
+        if RTMDB.favorite_rares then
+            self.defaults.global.favorite_rares = RTMDB.favorite_rares
+        end
+        
+        if RTMDB.ignore_rare then
+            self.defaults.global.ignore_rares = RTMDB.ignore_rare
+        end
+        
+        if RTMDB.window_scale then
+            self.defaults.global.window_scale = RTMDB.window_scale
+        end
+        
+        -- Remove the RTUDB table.
+        RTMDB = nil
+    end
+    
     -- Load the database.
     self.db = LibStub("AceDB-3.0"):New("RareTrackerMechagonDB", self.defaults, true)
 end
