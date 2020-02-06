@@ -44,7 +44,7 @@ function RTM:AddModuleOptions(options)
         args = {
             description = {
                 type = "description",
-                name = "RareTrackerMechagon (v"..GetAddOnMetadata("RareTrackerMechagon", "Version")..")",
+                name = "RareTrackerMechagon (RTM)",
                 order = RT:GetOrder(),
                 fontSize = "large",
                 width = "full",
