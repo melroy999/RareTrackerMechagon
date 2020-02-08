@@ -416,7 +416,7 @@ elseif RTM.localization == "zhCN" then
         [154342] = "蜘蛛收割者 (平行)",
         [155060] = "同行者",
         [152113] = "防窃者首领 (CC88)",
-        [154225] = "锈痕王子 (F)",
+        [154225] = "锈痕王子 (平行)",
         [151623] = "废铁之王 (一阶段)",
         [151625] = "废铁之王",
         [151940] = "阿叔提罗格",
@@ -453,7 +453,7 @@ elseif RTM.localization == "zhCN" then
         [150937] = "唾海",
         [153000] = "火花女王皮恩普",
         [153226] = "钢铁歌手弗莉萨",
-        [152932] = "Razak Ironsides",
+        [152932] = "拉沙克·铁墙",
     }
 elseif RTM.localization == "zhTW" then
     -- The names to be displayed in the frames and general chat messages for the Taiwanese localization.
