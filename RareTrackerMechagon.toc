@@ -4,7 +4,7 @@
 ## Author: Melroy
 ## Version: 7.0.0
 ## SavedVariables: RareTrackerMechagonDB
-## Dependencies: RareTracker
+## Dependencies: RareTrackerCore
 
 Locales\enUS.lua
 Locales\deDE.lua
