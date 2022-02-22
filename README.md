@@ -8,5 +8,6 @@
 - [RareTrackerVale (RTV)](https://www.curseforge.com/wow/addons/raretrackervale-rtv) for the Vale of Eternal Blossoms
 - [RareTrackerWorldBosses (RTWB)](https://www.curseforge.com/wow/addons/raretrackerworldbosses-rtwb) for World Bosses
 - [RareTrackerMaw (RTMW)](https://www.curseforge.com/wow/addons/raretrackermaw-rtmw) for The Maw
+- [RareTrackerZerethMortis (RTZ)](https://www.curseforge.com/wow/addons/raretrackermaw-rtmw) for Zereth Mortis
 
 Alternatively, you can download the [RareTracker (RT)](https://www.curseforge.com/wow/addons/raretracker-rt) addon, which will automatically add all modules, including those that I might add in the future!
